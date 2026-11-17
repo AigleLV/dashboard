@@ -1,0 +1,77 @@
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--fond);
+  h1 {color : var(--texte);}
+}
+
+:root {
+--fond : #0f1117;
+--case: #1a1d27;
+--bordure: #2a2f3d;
+--texte: #e6e8ee;
+--texte-doux : #8b91a1;
+--spotify: #1db954;
+--horloge: #e6e8ee;
+--mimir: #b388ff;
+--meteo: #5ab0ff;
+--programme: #f5a623;
+--sport: #ff5c5c;
+}
+
+.dashboard {
+  display: grid;
+  background: var(--fond);
+  color: var(--texte);
+  margin: 0;
+  height: calc(100vh - 100px);
+
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-areas:
+  "spotify horloge mimir"
+  "meteo programme sport" ;
+  gap: 10px;
+}
+
+section{
+  border: 1px solid var(--bordure);
+  background: var(--case);
+  padding : 16px;
+  border-radius : 8px;
+  li {
+    color : var(--texte);
+  }
+
+  p {
+    color : var(--texte);
+  }
+}
+
+.horloge {
+    color : var(--horloge);
+    grid-area: horloge;   
+}
+
+.spotify {
+    color : var(--spotify);
+    grid-area: spotify;
+}
+
+.mimir {
+    color : var(--mimir);
+    grid-area: mimir;
+}
+
+.meteo {
+    color : var(--meteo);
+    grid-area: meteo;
+}
+
+.programme {
+    color : var(--programme);
+    grid-area: programme;
+}
+
+.sport {
+    color : var(--sport);
+    grid-area: sport;
+}
