@@ -1,0 +1,25 @@
+[
+    {
+        "date": "2026-11-19",
+        "debut": "08:00",
+        "fin": "11:15",
+        "titre": "Cours INF301",
+        "lieu": "A102"
+    },
+
+    {
+        "date": "2026-11-19",
+        "debut": "15:15",
+        "fin": "16:45",
+        "titre": "Cours INF304",
+        "lieu": "F2"
+    },
+
+    {
+        "date": "2026-11-19",
+        "debut": "12:00",
+        "fin": "14:00",
+        "titre": "Repos du guerrier",
+        "lieu": "Chez moi"
+    }
+]
