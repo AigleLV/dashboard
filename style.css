@@ -1,77 +1,172 @@
+/* ==========================================================
+   1. VARIABLES
+   Toutes les couleurs du dashboard, à un seul endroit.
+   ========================================================== */
+:root {
+  --fond: #0f1117;
+  --case: #1a1d27;
+  --bordure: #2a2f3d;
+  --texte: #e6e8ee;
+  --texte-doux: #8b91a1;
+
+  /* Une couleur par carte */
+  --horloge: #e6e8ee;
+  --spotify: #1db954;
+  --mimir: #b388ff;
+  --meteo: #5ab0ff;
+  --programme: #f5a623;
+  --sport: #ff5c5c;
+}
+
+
+/* ==========================================================
+   2. BASE
+   Le style de la page entière.
+   ========================================================== */
 body {
   font-family: "Inter", sans-serif;
   background: var(--fond);
-  h1 {color : var(--texte);}
 }
 
-:root {
---fond : #0f1117;
---case: #1a1d27;
---bordure: #2a2f3d;
---texte: #e6e8ee;
---texte-doux : #8b91a1;
---spotify: #1db954;
---horloge: #e6e8ee;
---mimir: #b388ff;
---meteo: #5ab0ff;
---programme: #f5a623;
---sport: #ff5c5c;
+h1 {
+  color: var(--texte);
 }
 
+
+/* ==========================================================
+   3. MISE EN PAGE
+   La grille qui place les 6 cartes.
+   ========================================================== */
 .dashboard {
   display: grid;
-  background: var(--fond);
-  color: var(--texte);
-  margin: 0;
-  height: calc(100vh - 100px);
-
   grid-template-columns: 1fr 2fr 1fr;
   grid-template-areas:
-  "spotify horloge mimir"
-  "meteo programme sport" ;
+    "spotify horloge   mimir"
+    "meteo   programme sport";
   gap: 10px;
+  height: calc(100vh - 100px);
+  color: var(--texte);
 }
 
-section{
+
+/* ==========================================================
+   4. CARTES
+   Le style commun, puis la place et la couleur de chacune.
+   ========================================================== */
+section {
+  padding: 16px;
   border: 1px solid var(--bordure);
+  border-radius: 8px;
   background: var(--case);
-  padding : 16px;
-  border-radius : 8px;
-  li {
-    color : var(--texte);
-  }
-
-  p {
-    color : var(--texte);
-  }
 }
 
+section p,
+section li {
+  color: var(--texte);
+}
+
+.horloge   { grid-area: horloge;   color: var(--horloge); }
+.spotify   { grid-area: spotify;   color: var(--spotify); }
+.mimir     { grid-area: mimir;     color: var(--mimir); }
+.meteo     { grid-area: meteo;     color: var(--meteo); }
+.programme { grid-area: programme; color: var(--programme); }
+.sport     { grid-area: sport;     color: var(--sport); }
+
+
+/* ==========================================================
+   5. HORLOGE À PALETTES
+   ========================================================== */
+
+/* 5a. La carte et le conteneur */
 .horloge {
-    color : var(--horloge);
-    grid-area: horloge;   
+  display: flex;
+  flex-direction: column;       /* titre en haut, palettes dessous */
 }
 
-.spotify {
-    color : var(--spotify);
-    grid-area: spotify;
+.palettes {
+  flex: 1;                      /* prend toute la place sous le titre */
+  min-height: 0;
+  container-type: size;         /* active les unités cqw / cqh */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
 }
 
-.mimir {
-    color : var(--mimir);
-    grid-area: mimir;
+.separateur {
+  font-size: min(12cqw, 60cqh);
+  font-weight: 700;
+  color: var(--texte);
 }
 
-.meteo {
-    color : var(--meteo);
-    grid-area: meteo;
+/* 5b. Une palette : un cadre qui contient 4 morceaux */
+.palette {
+  position: relative;
+  width: 1.1em;
+  height: 1.5em;
+  font-size: min(12cqw, 60cqh); /* suit la taille de la carte */
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  perspective: 300px;           /* profondeur 3D pour les volets */
 }
 
-.programme {
-    color : var(--programme);
-    grid-area: programme;
+/* La fente au milieu, au-dessus de tout */
+.palette::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--case);
+  z-index: 3;
 }
 
-.sport {
-    color : var(--sport);
-    grid-area: sport;
+/* 5c. Les 4 morceaux : des demi-cases noires qui cachent ce qui dépasse */
+.moitie,
+.volet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+  background: #000;
+}
+
+.haut { top: 0;    border-radius: 6px 6px 0 0; transform-origin: bottom; }
+.bas  { bottom: 0; border-radius: 0 0 6px 6px; transform-origin: top; }
+
+/* Le chiffre fait la hauteur d'une case entière :
+   en haut on voit sa moitié haute, en bas sa moitié basse */
+.moitie span,
+.volet span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 200%;
+  line-height: 1.5em;
+  text-align: center;
+}
+
+.haut span { top: 0; }
+.bas span  { bottom: 0; }
+
+/* Les volets passent devant les moitiés fixes */
+.volet     { z-index: 2; backface-visibility: hidden; }
+.volet.bas { transform: rotateX(90deg); }   /* au repos : replié, invisible */
+
+/* 5d. L'animation, en deux temps */
+.palette.bascule .volet.haut { animation: tombe-haut 0.25s ease-in both; }
+.palette.bascule .volet.bas  { animation: tombe-bas 0.25s ease-out 0.25s both; }
+
+@keyframes tombe-haut {
+  from { transform: rotateX(0deg);   filter: brightness(1); }
+  to   { transform: rotateX(-90deg); filter: brightness(0.5); }
+}
+
+@keyframes tombe-bas {
+  from { transform: rotateX(90deg); filter: brightness(0.5); }
+  to   { transform: rotateX(0deg);  filter: brightness(1); }
 }
