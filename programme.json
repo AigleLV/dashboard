@@ -1,6 +1,6 @@
 [
     {
-        "date": "2026-11-19",
+        "date": "19/11/2026",
         "debut": "08:00",
         "fin": "11:15",
         "titre": "Cours INF301",
@@ -8,7 +8,7 @@
     },
 
     {
-        "date": "2026-11-19",
+        "date": "19/11/2026",
         "debut": "15:15",
         "fin": "16:45",
         "titre": "Cours INF304",
@@ -16,10 +16,18 @@
     },
 
     {
-        "date": "2026-11-19",
+        "date": "19/11/2026",
         "debut": "12:00",
         "fin": "14:00",
         "titre": "Repos du guerrier",
+        "lieu": "Chez moi"
+    },
+
+    {
+        "date": "19/11/2026",
+        "debut": "22:00",
+        "fin": "00:00",
+        "titre": "Dodo du guerrier",
         "lieu": "Chez moi"
     }
 ]
