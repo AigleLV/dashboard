@@ -22,10 +22,19 @@ async function chargerProgramme() {
         return;
     }
 
+    const maintenant = heureActuelle();
+    
     activiteJour.forEach((activite) => {
-      const li = document.createElement("li");      // 1. créer
-      li.textContent = `${activite.debut} · ${activite.fin} · ${activite.titre} · ${activite.lieu}`;      // 2. remplir
-      elementListe.appendChild(li);     // 3. ajouter
+        const li = document.createElement("li");      // 1. créer
+        li.textContent = `${activite.debut} · ${activite.fin} · ${activite.titre} · ${activite.lieu}`;      // 2. remplir
+        
+        if (activite.fin <= maintenant) {
+            li.classList.add("passee");                                // fini
+        } else if (activite.debut <= maintenant) {
+            li.classList.add("en-cours");                              // en cours
+        }
+    
+        elementListe.appendChild(li);     // 3. ajouter
     });
 
   } catch (erreur) {
@@ -60,5 +69,17 @@ function activitesDuJour(liste){
     return actjour;
 }
 
+function heureActuelle(){
+    const maintenant = new Date();
+    let h = String(maintenant.getHours());
+    let m = String(maintenant.getMinutes());
+
+    if (h.length === 1) { h = `0${h}`; }
+    if (m.length === 1) { m = `0${m}`; }
+
+    return h + ":" + m;;
+}
+
 
 chargerProgramme();
+setInterval(chargerProgramme, 60 * 1000);

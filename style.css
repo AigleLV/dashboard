@@ -170,3 +170,12 @@ section li {
   from { transform: rotateX(90deg); filter: brightness(0.5); }
   to   { transform: rotateX(0deg);  filter: brightness(1); }
 }
+
+.passee {
+  opacity: 0.4;
+}
+
+.en-cours {
+  color: var(--programme);
+  font-weight: 700;
+}
