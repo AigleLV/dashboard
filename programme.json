@@ -29,5 +29,46 @@
         "fin": "23:59",
         "titre": "Dodo du guerrier",
         "lieu": "Chez moi"
+    },
+
+    {
+        "date": "20/11/2026",
+        "debut": "08:00",
+        "fin": "09:00",
+        "titre": "Appelle avec bout chou",
+        "lieu": "Chez moi"
+    },
+    
+    {
+        "date": "20/11/2026",
+        "debut": "09:00",
+        "fin": "11:00",
+        "titre": "Salle de sport",
+        "lieu": "On air"
+    },
+
+    {
+        "date": "20/11/2026",
+        "debut": "11:00",
+        "fin": "12:00",
+        "titre": "centrakor + cultura + passage",
+        "lieu": "Nerpick"
+    },
+
+    {
+        "date": "20/11/2026",
+        "debut": "12:00",
+        "fin": "13:30",
+        "titre": "Posez livre et manger",
+        "lieu": "Nerpick"
+    },
+
+    {
+        "date": "20/11/2026",
+        "debut": "13:30",
+        "fin": "16:45",
+        "titre": "INF304 (salle A103",
+        "lieu": "Chez moi"
     }
+   
 ]

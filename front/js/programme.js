@@ -1,4 +1,4 @@
-const URL_PROGRAMME = "programme.json";
+const URL_PROGRAMME = "/api/programme";
 
 async function chargerProgramme() {
   const elementListe = document.getElementById("programme-liste");
