@@ -1,12 +1,21 @@
-const URL_METEO = "https://api.open-meteo.com/v1/forecast?latitude=45.17&longitude=5.77&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&current=temperature_2m,weather_code,precipitation&timezone=Europe%2FParis&forecast_days=1";
+const URL_METEO = "/api/meteo";
+
+const VILLES = [
+  { id: "saint-martin", nom: "Saint-Martin-d'Hères" },
+  { id: "meribel", nom: "Méribel" },
+  { id: "val-darc", nom: "Val-d'Arc"}
+];
+
+let indexVille = 0;
 
 async function chargerMeteo() {
   try {
-    const reponse = await fetch(URL_METEO); 
+    const ville = VILLES[indexVille];
+    const reponse = await fetch(`${URL_METEO}?ville=${ville.id}`);
     const donnees = await reponse.json();
 
-    const ville = document.getElementById("meteo-ville");
-    ville.textContent = "Saint Martin d'hères"
+    const elementville = document.getElementById("meteo-ville");
+    elementville.textContent = ville.nom;
 
     const elementTemperature = document.getElementById("meteo-temperature");
     elementTemperature.textContent = `Température actuelle : ${Math.round(donnees.current.temperature_2m)} °C`;
@@ -29,8 +38,8 @@ async function chargerMeteo() {
   } 
   catch (error){
     console.error(error);
-    const ville = document.getElementById("meteo-ville");
-    ville.textContent = '⚠️ Météo indisponible'
+    const elementTemperature = document.getElementById("meteo-temperature");
+    elementTemperature.textContent = "⚠️ Météo indisponible";
     setTimeout(chargerMeteo, 30 * 1000);
   }
 }
@@ -59,5 +68,20 @@ function decrireMeteo(code){
     return "❓ Inconnu"
 }
 
+function villeSuivante() {
+  indexVille = (indexVille + 1) % VILLES.length;
+  chargerMeteo();
+}
+
+function villePrecedente() {
+  indexVille = (indexVille - 1 + VILLES.length) % VILLES.length;
+  chargerMeteo();
+}
+
 chargerMeteo();
-setInterval(chargerMeteo, 15*60*1000);
+setInterval(chargerMeteo, 15 * 60 * 1000);
+
+const boutonPrecedent = document.getElementById("meteo-precedent");
+const boutonSuivant = document.getElementById("meteo-suivant");
+boutonPrecedent.addEventListener("click", villePrecedente);
+boutonSuivant.addEventListener("click", villeSuivante);
