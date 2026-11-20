@@ -179,3 +179,8 @@ section li {
   color: var(--programme);
   font-weight: 700;
 }
+
+#meteo-ville {
+  font-weight: 700;
+  font-size: 1.2em;
+}
