@@ -38,7 +38,12 @@ def heure():
 def programme():
     with open(FICHIER_PROGRAMME, encoding="utf-8") as fichier:
         donnees = json.load(fichier)
-    return donnees
+
+    try : 
+        cours = ade()
+    except HTTPException as erreur:
+        cours = []
+    return donnees + cours
 
 @app.get("/api/meteo")
 def meteo(ville: str = "saint-martin"):
@@ -99,6 +104,6 @@ def ade():
             return cache_ade
         raise HTTPException(status_code=503, detail="Emploi du temps indisponible")
 
-        
+
 
 app.mount("/", StaticFiles(directory=DOSSIER_FRONT, html=True), name="front")
