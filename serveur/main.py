@@ -1,11 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from datetime import datetime
 import json
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
 import httpx
 import time
-
 
 VILLES = {
     "saint-martin" : [45.18, 5.76],
@@ -15,8 +14,6 @@ VILLES = {
 
 cache_meteo = {}
 heure_cache = {}
-
-URL_METEO = "https://api.open-meteo.com/v1/forecast?latitude=45.17&longitude=5.77&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&current=temperature_2m,weather_code,precipitation&timezone=Europe%2FParis&forecast_days=1"
 
 DOSSIER_PROJET = Path(__file__).parent.parent
 FICHIER_PROGRAMME = DOSSIER_PROJET / "programme.json"
@@ -36,16 +33,27 @@ def programme():
 
 @app.get("/api/meteo")
 def meteo(ville: str = "saint-martin"):
-    URL = f"https://api.open-meteo.com/v1/forecast?latitude={VILLES[ville][0]}&longitude={VILLES[ville][1]}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&current=temperature_2m,weather_code,precipitation&timezone=Europe%2FParis&forecast_days=1"
-    global cache_meteo, heure_cache
+    if ville not in VILLES:
+        raise HTTPException(status_code=404, detail="Ville inconnue")
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={VILLES[ville][0]}&longitude={VILLES[ville][1]}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&current=temperature_2m,weather_code,precipitation&timezone=Europe%2FParis&forecast_days=1"
+
     if ville in cache_meteo and (time.time() - heure_cache[ville]) < 10*60:
         return cache_meteo[ville]
 
     else :
-        print("Appel à Open-Meteo")
-        reponse = httpx.get(URL)
-        cache_meteo[ville] = reponse.json()
-        heure_cache[ville] = time.time()
-        return reponse.json()
+        try :
+            print("Appel à Open-Meteo")
+            reponse = httpx.get(url, timeout=10)
+            reponse.raise_for_status()
+            cache_meteo[ville] = reponse.json()
+            heure_cache[ville] = time.time()
+            return cache_meteo[ville]
+        except httpx.HTTPError as erreur:
+            print(erreur)
+            if ville in cache_meteo:
+                return cache_meteo[ville]
+            else :
+                raise HTTPException(status_code=503, detail="Service Indisponible")
+
 
 app.mount("/", StaticFiles(directory=DOSSIER_FRONT, html=True), name="front")
