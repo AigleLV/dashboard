@@ -5,6 +5,8 @@ from pathlib import Path
 from fastapi.staticfiles import StaticFiles
 import httpx
 import time
+from icalendar import Calendar
+from zoneinfo import ZoneInfo
 
 VILLES = {
     "saint-martin" : [45.18, 5.76],
@@ -15,9 +17,16 @@ VILLES = {
 cache_meteo = {}
 heure_cache = {}
 
+cache_ade = None
+heure_ade = 0
+
 DOSSIER_PROJET = Path(__file__).parent.parent
 FICHIER_PROGRAMME = DOSSIER_PROJET / "programme.json"
 DOSSIER_FRONT = DOSSIER_PROJET / "front"
+
+FICHIER_ADE = Path(__file__).parent / "ade_url.txt"
+URL_ADE = FICHIER_ADE.read_text().strip()
+PARIS = ZoneInfo("Europe/Paris")
 
 app = FastAPI()          # crée l'application
 
@@ -55,5 +64,41 @@ def meteo(ville: str = "saint-martin"):
             else :
                 raise HTTPException(status_code=503, detail="Service Indisponible")
 
+
+@app.get("/api/ade")
+def ade():
+    global cache_ade, heure_ade
+    if cache_ade is not None and time.time() - heure_ade < 60 * 60:
+        return cache_ade
+
+    try:
+        print("Appel à ADE")
+        reponse = httpx.get(URL_ADE, timeout=60)
+        reponse.raise_for_status()
+        calendrier = Calendar.from_ical(reponse.content)
+        cours = []
+        for evenement in calendrier.walk("VEVENT"):
+            titre = str(evenement["SUMMARY"])
+            if titre.startswith("INF301") or titre.startswith("INF304"):
+                debut = evenement["DTSTART"].dt.astimezone(PARIS)
+                fin = evenement["DTEND"].dt.astimezone(PARIS)
+                cours.append({
+                    "date": debut.strftime("%d/%m/%Y"),
+                    "debut": debut.strftime("%H:%M"),
+                    "fin": fin.strftime("%H:%M"),
+                    "titre": titre,
+                    "lieu": str(evenement.get("LOCATION", "")),
+                })
+        cache_ade = cours
+        heure_ade = time.time()
+        return cache_ade
+
+    except httpx.HTTPError as erreur:
+        print(erreur)
+        if cache_ade is not None:
+            return cache_ade
+        raise HTTPException(status_code=503, detail="Emploi du temps indisponible")
+
+        
 
 app.mount("/", StaticFiles(directory=DOSSIER_FRONT, html=True), name="front")
