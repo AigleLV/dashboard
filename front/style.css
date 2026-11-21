@@ -18,6 +18,9 @@
   --sport: #ff5c5c;
 }
 
+html {
+  font-size: clamp(9px, 1.7vh, 20px);
+}
 
 /* ==========================================================
    2. BASE
@@ -26,12 +29,19 @@
 body {
   font-family: "Inter", sans-serif;
   background: var(--fond);
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px 10px;
+  box-sizing: border-box;
 }
 
 h1 {
   color: var(--texte);
+  margin: 0.4em 0;
+  font-size: 2rem;
 }
-
 
 /* ==========================================================
    3. MISE EN PAGE
@@ -44,8 +54,25 @@ h1 {
     "spotify horloge   mimir"
     "meteo   programme sport";
   gap: 10px;
-  height: calc(100vh - 100px);
+  flex: 1;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   color: var(--texte);
+}
+
+.mimir {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.mimir-logo {
+  min-height: 0;
+}
+
+.mimir-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 
@@ -58,9 +85,20 @@ section {
   border: 1px solid var(--bordure);
   border-radius: 8px;
   background: var(--case);
+    min-height: 0;
+  overflow: hidden;
 }
 
-section p,
+section h2 {
+  margin: 0 0 0.5em;
+  font-size: 1.5rem;
+}
+
+section p {
+  margin: 0.35em 0;
+  color: var(--texte);
+}
+
 section li {
   color: var(--texte);
 }
