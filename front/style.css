@@ -132,6 +132,31 @@ section li {
   padding-left: 12px;
 }  
 
+#mois-annee {
+  text-align: center;
+  font-weight: 700;
+}
+
+#calendrier-grille {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+  color: var(--texte);
+}
+
+.calendrier-entete {
+  color: var(--texte-doux);
+  font-weight: 700;
+}
+
+.aujourdhui {
+  background: var(--programme);
+  color: var(--fond);
+  font-weight: 700;
+  border-radius: 6px;
+}
+
 /* ==========================================================
    6. METEO
    ========================================================== */
