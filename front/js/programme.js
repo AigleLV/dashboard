@@ -6,7 +6,7 @@ async function chargerProgramme() {
   try {
     // Affiche la date du jour
     const elementCode = document.getElementById("date-du-jour");
-    elementCode.textContent = `Date : ${dateDuJour()}`;
+    elementCode.textContent = `Date du jour : ${dateDuJour()}`;
 
     const reponse = await fetch(URL_PROGRAMME);
     const activites = await reponse.json();
