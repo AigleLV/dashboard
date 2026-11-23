@@ -24,6 +24,8 @@ DOSSIER_PROJET = Path(__file__).parent.parent
 FICHIER_PROGRAMME = DOSSIER_PROJET / "programme.json"
 DOSSIER_FRONT = DOSSIER_PROJET / "front"
 
+FICHIER_SPORT = DOSSIER_PROJET / "sport.json"
+
 FICHIER_ADE = Path(__file__).parent / "ade_url.txt"
 URL_ADE = FICHIER_ADE.read_text().strip()
 PARIS = ZoneInfo("Europe/Paris")
@@ -105,5 +107,14 @@ def ade():
         raise HTTPException(status_code=503, detail="Emploi du temps indisponible")
 
 
+@app.get("/api/sport")
+def sport():
+    with open(FICHIER_SPORT, encoding="utf-8") as fichier:
+        donnees = json.load(fichier)
+    return donnees
+    
 
+
+
+# Toujour en dernier.
 app.mount("/", StaticFiles(directory=DOSSIER_FRONT, html=True), name="front")
