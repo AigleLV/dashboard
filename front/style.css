@@ -46,6 +46,7 @@ h1 {
 /* ==========================================================
    3. MISE EN PAGE
    La grille qui place les 6 cartes.
+   ET Bouton
    ========================================================== */
 .dashboard {
   display: grid;
@@ -60,21 +61,22 @@ h1 {
   color: var(--texte);
 }
 
-.mimir {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+/* Bouton */
+.meteo-carrousel, .programme-carrousel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.mimir-logo {
-  min-height: 0;
+.meteo-carrousel button, .programme-carrousel button {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--bordure);
+  border-radius: 6px;
+  font-size: 1.5em;
+  padding: 0 12px;
+  cursor: pointer;
 }
-
-.mimir-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
 
 /* ==========================================================
    4. CARTES
@@ -110,12 +112,41 @@ section li {
 .programme { grid-area: programme; color: var(--programme); }
 .sport     { grid-area: sport;     color: var(--sport); }
 
-
 /* ==========================================================
-   5. HORLOGE À PALETTES
+   5. PROGRAMME
    ========================================================== */
 
-/* 5a. La carte et le conteneur */
+.programme {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.programme-colonnes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+}
+
+.programme-droite {
+  border-left : 1px solid var(--bordure);
+  padding-left: 12px;
+}  
+
+/* ==========================================================
+   6. METEO
+   ========================================================== */
+
+#meteo-ville {
+  font-weight: 700;
+  font-size: 1.2em;
+}
+
+
+/* ==========================================================
+   7. HORLOGE À PALETTES
+   ========================================================== */
+
+/* 7a. La carte et le conteneur */
 .horloge {
   display: flex;
   flex-direction: column;       /* titre en haut, palettes dessous */
@@ -137,7 +168,7 @@ section li {
   color: var(--texte);
 }
 
-/* 5b. Une palette : un cadre qui contient 4 morceaux */
+/* 7b. Une palette : un cadre qui contient 4 morceaux */
 .palette {
   position: relative;
   width: 1.1em;
@@ -162,7 +193,7 @@ section li {
   z-index: 3;
 }
 
-/* 5c. Les 4 morceaux : des demi-cases noires qui cachent ce qui dépasse */
+/* 7c. Les 4 morceaux : des demi-cases noires qui cachent ce qui dépasse */
 .moitie,
 .volet {
   position: absolute;
@@ -195,7 +226,7 @@ section li {
 .volet     { z-index: 2; backface-visibility: hidden; }
 .volet.bas { transform: rotateX(90deg); }   /* au repos : replié, invisible */
 
-/* 5d. L'animation, en deux temps */
+/* 7d. L'animation, en deux temps */
 .palette.bascule .volet.haut { animation: tombe-haut 0.25s ease-in both; }
 .palette.bascule .volet.bas  { animation: tombe-bas 0.25s ease-out 0.25s both; }
 
@@ -218,23 +249,21 @@ section li {
   font-weight: 700;
 }
 
-#meteo-ville {
-  font-weight: 700;
-  font-size: 1.2em;
+/* ==========================================================
+   8. MIMIR
+   ========================================================== */
+
+.mimir {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
-.meteo-carrousel {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.mimir-logo {
+  min-height: 0;
 }
 
-.meteo-carrousel button {
-  background: transparent;
-  color: var(--meteo);
-  border: 1px solid var(--bordure);
-  border-radius: 6px;
-  font-size: 1.5em;
-  padding: 0 12px;
-  cursor: pointer;
+.mimir-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
