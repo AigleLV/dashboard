@@ -4,38 +4,57 @@ async function chargerProgramme() {
   const elementListe = document.getElementById("programme-liste");
 
   try {
-    // Affiche la date du jour
-    const elementCode = document.getElementById("date-du-jour");
-    elementCode.textContent = `Date du jour : ${dateDuJour()}`;
+    const aujourdhui = new Date();
+    const elementDate = document.getElementById("date-du-jour");
+    elementDate.textContent = `Date du jour : ${formaterDate(aujourdhui)}`;
 
     const reponse = await fetch(URL_PROGRAMME);
     const activites = await reponse.json();
 
-    const activiteJour = activitesDuJour(activites);
-
-    elementListe.textContent = "";   // on vide la liste avant de la remplir
+    // ----- Aujourd'hui -----
+    const activiteJour = activitesDuJour(activites, aujourdhui);
+    elementListe.textContent = "";
 
     if (activiteJour.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "Rien de prévu aujourd'hui 🎉";
+      elementListe.appendChild(li);
+    } else {
+      const maintenant = heureActuelle();
+      activiteJour.forEach((activite) => {
         const li = document.createElement("li");
-        li.textContent = "Rien de prévu aujourd'hui 🎉";
+        li.textContent = `${activite.debut} · ${activite.fin} · ${activite.titre} · ${activite.lieu}`;
+        if (activite.fin <= maintenant) {
+          li.classList.add("passee");
+        } else if (activite.debut <= maintenant) {
+          li.classList.add("en-cours");
+        }
         elementListe.appendChild(li);
-        return;
+      });
     }
 
-    const maintenant = heureActuelle();
-    
-    activiteJour.forEach((activite) => {
-        const li = document.createElement("li");      // 1. créer
-        li.textContent = `${activite.debut} · ${activite.fin} · ${activite.titre} · ${activite.lieu}`;      // 2. remplir
-        
-        if (activite.fin <= maintenant) {
-            li.classList.add("passee");                                // fini
-        } else if (activite.debut <= maintenant) {
-            li.classList.add("en-cours");                              // en cours
-        }
-    
-        elementListe.appendChild(li);     // 3. ajouter
-    });
+    // ----- Demain -----
+    const demain = new Date();
+    demain.setDate(demain.getDate() + 1);
+
+    const elementDateDemain = document.getElementById("date-demain");
+    elementDateDemain.textContent = `Demain : ${formaterDate(demain)}`;
+
+    const activitesDemain = activitesDuJour(activites, demain);
+    const elementListeDemain = document.getElementById("programme-demain");
+    elementListeDemain.textContent = "";
+
+    if (activitesDemain.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "Rien de prévu demain 😴";
+      elementListeDemain.appendChild(li);
+    } else {
+      activitesDemain.forEach((activite) => {
+        const li = document.createElement("li");
+        li.textContent = `${activite.debut} · ${activite.fin} · ${activite.titre} · ${activite.lieu}`;
+        elementListeDemain.appendChild(li);
+      });
+    }
 
   } catch (erreur) {
     console.error(erreur);
@@ -44,22 +63,19 @@ async function chargerProgramme() {
   }
 }
 
-function dateDuJour(){
-    const maintenant = new Date();
-    let y = String(maintenant.getFullYear());
-    let m = String(maintenant.getMonth() + 1);
-    let d = String(maintenant.getDate());
+function formaterDate(date){
+    let y = String(date.getFullYear());
+    let m = String(date.getMonth() + 1);
+    let d = String(date.getDate());
 
     if ((m).length === 1) { m = `0${m}`; }
     if (d.length === 1) { d = `0${d}`; }
-
-    const date = d + '/' + m + '/' + y;
-    return date;
+    return d + '/' + m + '/' + y;
 }
 
-function activitesDuJour(liste){
+function activitesDuJour(liste, jour){
     const actjour = [];
-    const date = dateDuJour();
+    const date = formaterDate(jour);
     for (let i = 0; i< liste.length; i++){
         if (liste[i].date === date){
             actjour.push(liste[i]);
@@ -77,9 +93,8 @@ function heureActuelle(){
     if (h.length === 1) { h = `0${h}`; }
     if (m.length === 1) { m = `0${m}`; }
 
-    return h + ":" + m;;
+    return h + ":" + m;
 }
-
 
 chargerProgramme();
 setInterval(chargerProgramme, 60 * 1000);
