@@ -14,6 +14,11 @@ function moisSuivant(){
   afficherCalendrier();
 }
 
+function revenirAujourdhui(){
+  decalage = 0;
+  afficherCalendrier();  
+}
+
 function afficherCalendrier() {
   const aujourdhui = new Date();
   const cible = new Date(aujourdhui.getFullYear(), aujourdhui.getMonth() + decalage, 1);
@@ -64,3 +69,6 @@ boutonMoisPrecedent.addEventListener("click", moisPrecedent);
 
 const boutonMoisSuivant = document.getElementById("calendrier-suivant");
 boutonMoisSuivant.addEventListener("click", moisSuivant);
+
+const boutonMoisAujourdhui = document.getElementById("mois-annee");
+boutonMoisAujourdhui.addEventListener("click", revenirAujourdhui);
