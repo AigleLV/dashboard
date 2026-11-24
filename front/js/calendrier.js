@@ -2,10 +2,23 @@ const MOIS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
               "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 const JOURS_COURTS = ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"];
 
+let decalage = 0;
+
+function moisPrecedent(){
+  decalage --;
+  afficherCalendrier();
+}
+
+function moisSuivant(){
+  decalage ++;
+  afficherCalendrier();
+}
+
 function afficherCalendrier() {
   const aujourdhui = new Date();
-  const annee = aujourdhui.getFullYear();
-  const mois = aujourdhui.getMonth();
+  const cible = new Date(aujourdhui.getFullYear(), aujourdhui.getMonth() + decalage, 1);
+  const annee = cible.getFullYear();
+  const mois = cible.getMonth();
 
   // Le titre : « Novembre 2026 »
   const elementTitre = document.getElementById("mois-annee");
@@ -35,7 +48,7 @@ function afficherCalendrier() {
   for (let jour = 1; jour <= nbJours; jour++) {
     const caseJour = document.createElement("div");
     caseJour.textContent = jour;
-    if (jour === aujourdhui.getDate()) {
+    if (decalage === 0 && jour === aujourdhui.getDate()) {
       caseJour.classList.add("aujourdhui");
     }
     grille.appendChild(caseJour);
@@ -44,3 +57,10 @@ function afficherCalendrier() {
 
 afficherCalendrier();
 setInterval(afficherCalendrier, 60 * 60 * 1000);
+
+
+const boutonMoisPrecedent = document.getElementById("calendrier-precedent");
+boutonMoisPrecedent.addEventListener("click", moisPrecedent);
+
+const boutonMoisSuivant = document.getElementById("calendrier-suivant");
+boutonMoisSuivant.addEventListener("click", moisSuivant);

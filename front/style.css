@@ -62,13 +62,13 @@ h1 {
 }
 
 /* Bouton */
-.meteo-carrousel, .programme-carrousel {
+.meteo-carrousel, .programme-carrousel, .calendrier-carrousel {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.meteo-carrousel button, .programme-carrousel button {
+.meteo-carrousel button, .programme-carrousel button, .calendrier-carrousel button {
   background: transparent;
   color: inherit;
   border: 1px solid var(--bordure);
