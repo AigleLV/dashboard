@@ -188,5 +188,72 @@ def spotify_retour(code: str):
 
     return RedirectResponse("/")
 
+def jeton_valide():
+    if not FICHIER_JETONS.exists():
+        raise HTTPException(status_code=401, detail="Spotify non connecté")
+
+    with open(FICHIER_JETONS, encoding="utf-8") as fichier:
+        jetons = json.load(fichier)
+
+    maintenant = time.time()
+    if maintenant < jetons["expire_a"] - 60:
+        return jetons["access_token"]
+
+    try:
+        reponse = httpx.post(
+            "https://accounts.spotify.com/api/token",
+            data={
+                "grant_type": "refresh_token",
+                "refresh_token": jetons["refresh_token"],
+            },
+            auth=(SPOTIFY["client_id"], SPOTIFY["client_secret"]),
+            timeout=10,
+        )
+        reponse.raise_for_status()
+        nouveaux = reponse.json()
+    except httpx.HTTPError as erreur:
+        print(erreur)
+        raise HTTPException(status_code=503, detail="Spotify indisponible")
+
+    jetons["access_token"] = nouveaux["access_token"]
+    jetons["expire_a"] = maintenant + nouveaux["expires_in"]
+    with open(FICHIER_JETONS, "w", encoding="utf-8") as fichier:
+        json.dump(jetons, fichier, indent=4)
+    return jetons["access_token"]
+
+
+@app.get("/api/spotify")
+def spotify():
+    jeton = jeton_valide()
+    try:
+        reponse = httpx.get("https://api.spotify.com/v1/me/player/currently-playing", 
+            headers={"Authorization": f"Bearer {jeton}"}, 
+            timeout=10)
+
+        if reponse.status_code == 204 :
+            return {"en_lecture": False}
+
+        reponse.raise_for_status()
+        donnees = reponse.json()
+
+    except httpx.HTTPError as erreur:
+        print(erreur)
+        raise HTTPException(status_code=503, detail="Spotify indisponible")
+
+    item = donnees["item"]
+    if item is None :
+        return {"en_lecture": False}
+
+    return {
+        "en_lecture":     donnees["is_playing"],
+        "titre":          item["name"],
+        "artistes":       ", ".join(artiste["name"] for artiste in item["artists"]),
+        "pochette":       item["album"]["images"][0]["url"],
+        "progression_ms": donnees["progress_ms"],
+        "duree_ms":       item["duration_ms"],
+    }
+
+    
+
 # Toujour en dernier.
 app.mount("/", StaticFiles(directory=DOSSIER_FRONT, html=True), name="front")
