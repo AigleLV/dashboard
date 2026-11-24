@@ -7,6 +7,15 @@ import httpx
 import time
 from icalendar import Calendar
 from zoneinfo import ZoneInfo
+from pydantic import BaseModel
+
+class Activite(BaseModel):
+    date: str
+    debut: str
+    fin: str
+    titre: str
+    lieu: str
+    
 
 VILLES = {
     "saint-martin" : [45.18, 5.76],
@@ -46,6 +55,17 @@ def programme():
     except HTTPException as erreur:
         cours = []
     return donnees + cours
+
+@app.post("/api/programme")
+def ajouter_activite(activite: Activite):
+    with open(FICHIER_PROGRAMME, encoding="utf-8") as fichier:
+        donnees = json.load(fichier)
+    donnees.append(activite.model_dump())
+
+    with open(FICHIER_PROGRAMME, "w", encoding="utf-8") as fichier:
+        json.dump(donnees, fichier, ensure_ascii=False, indent=4)
+
+    return activite
 
 @app.get("/api/meteo")
 def meteo(ville: str = "saint-martin"):

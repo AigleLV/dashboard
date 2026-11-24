@@ -16,6 +16,7 @@
     <script src="js/sport.js" defer></script>
     <script src="js/vues.js" defer></script>
     <script src="js/calendrier.js" defer></script>
+    <script src="js/ajout.js" defer></script>
 </head>
 <body>
     <header>
@@ -82,7 +83,22 @@
                     </div>
 
                     <div id="vue-ajouter" hidden> 
-                        <p> Ajouter </p>
+
+                        <form id="formulaire-ajout">
+                            <input type="date" id="date-ajout" required>
+                            <div class="ajout-heures">
+                                <input type="time" id="debut-ajout" required>
+                                →
+                                <input type="time" id="fin-ajout" required>
+                            </div>
+                            <input type="text" id="titre-ajout" placeholder="Titre" required>
+                            <input type="text" id="lieu-ajout" placeholder="Lieu">
+                            <div class="ajout-actions">
+                                <button type="submit">Ajouter</button>
+                                <p id="ajout-message"></p>
+                            </div>
+                        </form>
+
                     </div>
 
                 </div>

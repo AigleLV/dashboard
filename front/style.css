@@ -132,6 +132,8 @@ section li {
   padding-left: 12px;
 }  
 
+/* Calendriller en grille */
+
 #mois-annee {
   text-align: center;
   font-weight: 700;
@@ -155,6 +157,36 @@ section li {
   color: var(--fond);
   font-weight: 700;
   border-radius: 6px;
+}
+
+/* Ajouter un evenement */
+
+#formulaire-ajout {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.ajout-heures {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#formulaire-ajout input,
+#formulaire-ajout button {
+  background: var(--fond);
+  color: var(--texte);
+  border: 1px solid var(--bordure);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font: inherit;
+}
+
+#formulaire-ajout button {
+  color: var(--programme);
+  cursor: pointer;
 }
 
 /* ==========================================================
