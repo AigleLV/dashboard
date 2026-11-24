@@ -1,3 +1,5 @@
 .venv/
 __pycache__/
 ade_url.txt
+spotify.json
+spotify_jetons.json

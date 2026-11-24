@@ -1,14 +1,17 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from datetime import datetime
 import json
 from pathlib import Path
-from fastapi.staticfiles import StaticFiles
 import httpx
 import time
 from icalendar import Calendar
 from zoneinfo import ZoneInfo
 from pydantic import BaseModel
+from urllib.parse import urlencode
 
+# PROGRAMME
 class Activite(BaseModel):
     date: str
     debut: str
@@ -17,29 +20,41 @@ class Activite(BaseModel):
     lieu: str
     
 
+# METETO
 VILLES = {
     "saint-martin" : [45.18, 5.76],
     "meribel"      : [45.41, 6.57],
     "val-darc"     : [45.54, 6.30]
 }
 
+#CACHE
 cache_meteo = {}
 heure_cache = {}
 
 cache_ade = None
 heure_ade = 0
 
+# TROUVER LES FICHIER
 DOSSIER_PROJET = Path(__file__).parent.parent
 FICHIER_PROGRAMME = DOSSIER_PROJET / "programme.json"
 DOSSIER_FRONT = DOSSIER_PROJET / "front"
 
 FICHIER_SPORT = DOSSIER_PROJET / "sport.json"
 
+# ADE
 FICHIER_ADE = Path(__file__).parent / "ade_url.txt"
 URL_ADE = FICHIER_ADE.read_text().strip()
 PARIS = ZoneInfo("Europe/Paris")
 
-app = FastAPI()          # crée l'application
+# SPOTIFY
+FICHIER_SPOTIFY = Path(__file__).parent / "spotify.json"
+SPOTIFY = json.loads(FICHIER_SPOTIFY.read_text())
+REDIRECT_URI = "http://127.0.0.1:8000/api/spotify/retour"
+FICHIER_JETONS = Path(__file__).parent / "spotify_jetons.json"
+
+
+# crée l'application
+app = FastAPI()
 
 @app.get("/api/heure")
 def heure():
@@ -132,9 +147,46 @@ def sport():
     with open(FICHIER_SPORT, encoding="utf-8") as fichier:
         donnees = json.load(fichier)
     return donnees
-    
 
 
+@app.get("/api/spotify/connexion")
+def spotify_connexion():
+    parametre = {
+        "client_id": SPOTIFY["client_id"],
+        "response_type": "code",
+        "redirect_uri": REDIRECT_URI,
+        "scope": "user-read-currently-playing"
+    }
+
+    url_complete ="https://accounts.spotify.com/authorize?" + urlencode(parametre)
+    return RedirectResponse(url_complete)
+
+
+@app.get("/api/spotify/retour")
+def spotify_retour(code: str):
+    try:
+        reponse = httpx.post(
+            "https://accounts.spotify.com/api/token",
+            data={
+                "grant_type": "authorization_code",
+                "code": code,
+                "redirect_uri": REDIRECT_URI,
+            },
+            auth=(SPOTIFY["client_id"], SPOTIFY["client_secret"]),
+            timeout=10,
+        )
+        reponse.raise_for_status()
+        jetons = reponse.json()
+    except httpx.HTTPError as erreur:
+        print(erreur)
+        raise HTTPException(status_code=502, detail="Connexion Spotify échouée")
+
+    jetons["expire_a"] = time.time() + jetons["expires_in"]
+
+    with open(FICHIER_JETONS, "w", encoding="utf-8") as fichier:
+        json.dump(jetons, fichier, indent=4)
+
+    return RedirectResponse("/")
 
 # Toujour en dernier.
 app.mount("/", StaticFiles(directory=DOSSIER_FRONT, html=True), name="front")
